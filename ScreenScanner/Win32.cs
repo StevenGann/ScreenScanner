@@ -9,6 +9,9 @@ using System.Windows.Forms;
 
 namespace ScreenScanner
 {
+    //Win32 wrapper code courtesy of Stack Overflow
+    //Source: http://stackoverflow.com/questions/753132/how-do-i-get-the-colour-of-a-pixel-at-x-y-using-c
+
     private sealed class Win32
     {
         [DllImport("user32.dll")]

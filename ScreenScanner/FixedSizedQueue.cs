@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ScreenScanner
 {
+    //Fixed Queue code courtesy of Stack Overflow
+    //Source: http://stackoverflow.com/questions/5852863/fixed-size-queue-which-automatically-dequeues-old-values-upon-new-enques
+
     private class FixedSizedQueue<T> : ConcurrentQueue<T>
     {
         public int Size { get; private set; }
