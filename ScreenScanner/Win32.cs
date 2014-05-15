@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace ScreenScanner
 {
-    sealed class Win32
+    private sealed class Win32
     {
         [DllImport("user32.dll")]
         static extern IntPtr GetDC(IntPtr hwnd);

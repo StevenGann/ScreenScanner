@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ScreenScanner
 {
-    public class FixedSizedQueue<T> : ConcurrentQueue<T>
+    private class FixedSizedQueue<T> : ConcurrentQueue<T>
     {
         public int Size { get; private set; }
 
