@@ -16,13 +16,12 @@ namespace screenColorTest
     public partial class Form1 : Form
     {
         private Scanner scanner = new Scanner();
+        private bool serialIsReady = false;
 
         public Form1()
         {
             InitializeComponent();
         }
-
-        
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -43,6 +42,9 @@ namespace screenColorTest
             textBox1.Text = Convert.ToString(scanner.Output.R);
             textBox2.Text = Convert.ToString(scanner.Output.G);
             textBox3.Text = Convert.ToString(scanner.Output.B);
+
+            textBox4.Text = textBox1.Text + "," + textBox2.Text + "," + textBox3.Text + "\n";
+
             BackColor = scanner.Output;
         }
 

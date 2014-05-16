@@ -37,6 +37,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // textBox1
@@ -101,11 +103,23 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // serialPort1
+            // 
+            this.serialPort1.BaudRate = 115200;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(12, 91);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(204, 20);
+            this.textBox4.TabIndex = 7;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(228, 97);
+            this.ClientSize = new System.Drawing.Size(228, 128);
+            this.Controls.Add(this.textBox4);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -130,6 +144,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Timer timer1;
+        private System.IO.Ports.SerialPort serialPort1;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }
 
