@@ -26,7 +26,7 @@ namespace ScreenScanner
 		//Private Fields
 		private int screenHeight;
 		private int screenWidth;
-		private FixedSizedQueue<Color> rgbQ = new FixedSizedQueue<Color>(50); //TO DO: Make this adjustable at runtime.
+		private FixedSizedQueue<Color> rgbQ;// 
 		private Timer timer1 = new Timer();
 		private Random rnd = new Random();
 
@@ -35,6 +35,18 @@ namespace ScreenScanner
 		{
 			screenHeight = GetScreenHeight();
 			screenWidth = GetScreenWidth();
+
+			rgbQ = new FixedSizedQueue<Color>(50);
+
+			timer1.Tick += timerTick;
+		}
+
+		public Scanner(int sampleSize)
+		{
+			screenHeight = GetScreenHeight();
+			screenWidth = GetScreenWidth();
+
+			rgbQ = new FixedSizedQueue<Color>(sampleSize);
 
 			timer1.Tick += timerTick;
 		}
@@ -54,6 +66,11 @@ namespace ScreenScanner
 			timer1.Enabled = false;
 			Enabled = false;
 		}
+
+        public void SetSampleSize(int sampleSize)
+        {
+            rgbQ.Size = sampleSize;
+        }
 		//========================
 
 		//========================

@@ -12,7 +12,7 @@ namespace ScreenScanner
 
     class FixedSizedQueue<T> : ConcurrentQueue<T>
     {
-        public int Size { get; private set; }
+        public int Size { get; set; }
 
         public FixedSizedQueue(int size)
         {
