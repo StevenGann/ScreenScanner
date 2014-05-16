@@ -67,30 +67,45 @@ namespace ScreenScanner
 			Enabled = false;
 		}
 
-        public void SetSampleSize(int sampleSize)
-        {
-            rgbQ.Size = sampleSize;
-        }
+		public void SetSampleSize(int sampleSize)
+		{
+			rgbQ.Size = sampleSize;
+		}
 		//========================
 
 		//========================
 		//Private Methods
 		//========================
+
+		//Tick event handler for main timer object.
+		//This is where most of the functionality takes place.
 		private void timerTick(object sender, EventArgs e)
 		{
-			//int newX = rnd.Next(screenWidth);//(int)(((float)(rnd.Next(screenWidth)+rnd.Next(screenWidth)))/2.0f);
-			//int newY = rnd.Next(screenHeight);//(int)(((float)(rnd.Next(screenHeight)+rnd.Next(screenHeight)))/2.0f);
+			//To Do: Add method for switching pixel selection methods.
+            
+			//Linear Distribution
+			//Completely random.
+			//int newX = rnd.Next(screenWidth);
+			//int newY = rnd.Next(screenHeight);
 
+			//Logarithmic Distribution
+			//Random, but more likely to select from closer to the center of the screen.
 			int newX = (int)(((float)(rnd.Next(screenWidth)+rnd.Next(screenWidth)))/2.0f);
 			int newY = (int)(((float)(rnd.Next(screenHeight) + rnd.Next(screenHeight))) / 2.0f);
+
+			//To Do: Design selection algorithm that biases the outer portions of the screen.
 
 			Color newRGB = getRGB(newX, newY);
 
 			rgbQ.Enqueue(newRGB);
 
+			//To Do: Add a method for switching sample processing methods.
+
 			Output = averageQ();
 		}
 
+		//Flat average of entire sample set.
+		//Returns the averaged Color struct.
 		private Color averageQ()
 		{
 			Color result;
@@ -118,21 +133,27 @@ namespace ScreenScanner
 		//========================
 		//=== Static Methods =====
 		//========================
+
+		//Returns a Rectangle struct representing the dimensions of the main monitor.
+		//Not actually used yet, but small enough to keep around anyway.
 		static private Rectangle GetScreen()
 		{
 			return Screen.PrimaryScreen.Bounds;
 		}
 
+		//Returns the height of the primary display
 		static private int GetScreenHeight()
 		{
 			return Screen.PrimaryScreen.Bounds.Height;
 		}
 
+		//Returns the width of the primary display
 		static private int GetScreenWidth()
 		{
 			return Screen.PrimaryScreen.Bounds.Height;
 		}
 
+		//Returns the color of a given pixel as a Color struct
 		static private Color getRGB(int x, int y)
 		{
 			Color color = Win32.GetPixelColor(x, y);
