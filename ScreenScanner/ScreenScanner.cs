@@ -22,6 +22,7 @@ namespace ScreenScanner
 		public int SampleRate = 100;
 		public bool Enabled = false;
 		public Color Output = Color.FromArgb(0, 0, 0);
+		public bool SaturationBoost = false;
 
 		//Private Fields
 		private int screenHeight;
@@ -96,11 +97,12 @@ namespace ScreenScanner
 
 			//Logarithmic Distribution
 			//Random, but more likely to select from closer to the center of the screen.
-			//newX = (int)(((float)(rnd.Next(screenWidth)+rnd.Next(screenWidth)))/2.0f);
-			//newY = (int)(((float)(rnd.Next(screenHeight) + rnd.Next(screenHeight))) / 2.0f);
+			newX = (int)(((float)(rnd.Next(screenWidth)+rnd.Next(screenWidth)))/2.0f);
+			newY = (int)(((float)(rnd.Next(screenHeight) + rnd.Next(screenHeight))) / 2.0f);
 
 			//Reverse Logarithmic Distribution
 			//Random, but more likely to select from closer to the edge of the screen.
+			/*
 			int lin1 = rnd.Next(screenWidth);
 			int lin2 = rnd.Next(screenWidth);
 			newX = (int)(((float)(lin1 + lin2)) / 2.0f);
@@ -124,10 +126,7 @@ namespace ScreenScanner
 			{
 				newY -= Math.Min(lin1, lin2);
 			}
-
-
-			//To Do: Design selection algorithm that biases the outer portions of the screen.
-
+			*/
 			Color newRGB = getRGB(newX, newY);
 
 			rgbQ.Enqueue(newRGB);
@@ -135,6 +134,12 @@ namespace ScreenScanner
 			//To Do: Add a method for switching sample processing methods.
 
 			Output = averageQ();
+
+			//Max out saturation
+			if (SaturationBoost == true)
+			{
+				Output = HSBtoRGB(Output.GetHue(), Math.Max((float)Output.GetSaturation(), 0.1f), Output.GetBrightness());
+			}
 		}
 
 		//Flat average of entire sample set.
@@ -191,6 +196,60 @@ namespace ScreenScanner
 		{
 			Color color = Win32.GetPixelColor(x, y);
 			return color;
+		}
+
+		//Converts HSB values to a Color struct
+		//Courtesy of Stack Overflow
+		//http://stackoverflow.com/questions/4106363/converting-rgb-to-hsb-colors
+		public static Color HSBtoRGB(float hue, float saturation, float brightness)
+		{
+			int r = 0, g = 0, b = 0;
+			if (saturation == 0)
+			{
+				r = g = b = (int)(brightness * 255.0f + 0.5f);
+			}
+			else
+			{
+				float h = (hue - (float)Math.Floor(hue)) * 6.0f;
+				float f = h - (float)Math.Floor(h);
+				float p = brightness * (1.0f - saturation);
+				float q = brightness * (1.0f - saturation * f);
+				float t = brightness * (1.0f - (saturation * (1.0f - f)));
+				switch ((int)h)
+				{
+					case 0:
+						r = (int)(brightness * 255.0f + 0.5f);
+						g = (int)(t * 255.0f + 0.5f);
+						b = (int)(p * 255.0f + 0.5f);
+						break;
+					case 1:
+						r = (int)(q * 255.0f + 0.5f);
+						g = (int)(brightness * 255.0f + 0.5f);
+						b = (int)(p * 255.0f + 0.5f);
+						break;
+					case 2:
+						r = (int)(p * 255.0f + 0.5f);
+						g = (int)(brightness * 255.0f + 0.5f);
+						b = (int)(t * 255.0f + 0.5f);
+						break;
+					case 3:
+						r = (int)(p * 255.0f + 0.5f);
+						g = (int)(q * 255.0f + 0.5f);
+						b = (int)(brightness * 255.0f + 0.5f);
+						break;
+					case 4:
+						r = (int)(t * 255.0f + 0.5f);
+						g = (int)(p * 255.0f + 0.5f);
+						b = (int)(brightness * 255.0f + 0.5f);
+						break;
+					case 5:
+						r = (int)(brightness * 255.0f + 0.5f);
+						g = (int)(p * 255.0f + 0.5f);
+						b = (int)(q * 255.0f + 0.5f);
+						break;
+				}
+			}
+			return Color.FromArgb(Convert.ToByte(255), Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
 		}
 		//========================
 
