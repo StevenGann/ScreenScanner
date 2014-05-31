@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Collections;
 
+
 //General To Do:
 // - Add support for multiple monitors.
 
@@ -22,7 +23,7 @@ namespace ScreenScanner
 		public int SampleRate = 100;
 		public bool Enabled = false;
 		public Color Output = Color.FromArgb(0, 0, 0);
-		public bool SaturationBoost = false;
+		public bool ColorBoost = true;
 
 		//Private Fields
 		private int screenHeight;
@@ -136,9 +137,12 @@ namespace ScreenScanner
 			Output = averageQ();
 
 			//Max out saturation
-			if (SaturationBoost == true)
+			if (ColorBoost == true)
 			{
-				Output = HSBtoRGB(Output.GetHue(), Math.Max((float)Output.GetSaturation(), 0.1f), Output.GetBrightness());
+				HSLColor outputHSL = new HSLColor(Output);
+				outputHSL.Saturation = outputHSL.Saturation * 2.0f;
+				//outputHSL.Luminosity = outputHSL.Luminosity * 2.0f;
+				Output = (Color)outputHSL;
 			}
 		}
 
@@ -198,59 +202,7 @@ namespace ScreenScanner
 			return color;
 		}
 
-		//Converts HSB values to a Color struct
-		//Courtesy of Stack Overflow
-		//http://stackoverflow.com/questions/4106363/converting-rgb-to-hsb-colors
-		public static Color HSBtoRGB(float hue, float saturation, float brightness)
-		{
-			int r = 0, g = 0, b = 0;
-			if (saturation == 0)
-			{
-				r = g = b = (int)(brightness * 255.0f + 0.5f);
-			}
-			else
-			{
-				float h = (hue - (float)Math.Floor(hue)) * 6.0f;
-				float f = h - (float)Math.Floor(h);
-				float p = brightness * (1.0f - saturation);
-				float q = brightness * (1.0f - saturation * f);
-				float t = brightness * (1.0f - (saturation * (1.0f - f)));
-				switch ((int)h)
-				{
-					case 0:
-						r = (int)(brightness * 255.0f + 0.5f);
-						g = (int)(t * 255.0f + 0.5f);
-						b = (int)(p * 255.0f + 0.5f);
-						break;
-					case 1:
-						r = (int)(q * 255.0f + 0.5f);
-						g = (int)(brightness * 255.0f + 0.5f);
-						b = (int)(p * 255.0f + 0.5f);
-						break;
-					case 2:
-						r = (int)(p * 255.0f + 0.5f);
-						g = (int)(brightness * 255.0f + 0.5f);
-						b = (int)(t * 255.0f + 0.5f);
-						break;
-					case 3:
-						r = (int)(p * 255.0f + 0.5f);
-						g = (int)(q * 255.0f + 0.5f);
-						b = (int)(brightness * 255.0f + 0.5f);
-						break;
-					case 4:
-						r = (int)(t * 255.0f + 0.5f);
-						g = (int)(p * 255.0f + 0.5f);
-						b = (int)(brightness * 255.0f + 0.5f);
-						break;
-					case 5:
-						r = (int)(brightness * 255.0f + 0.5f);
-						g = (int)(p * 255.0f + 0.5f);
-						b = (int)(q * 255.0f + 0.5f);
-						break;
-				}
-			}
-			return Color.FromArgb(Convert.ToByte(255), Convert.ToByte(r), Convert.ToByte(g), Convert.ToByte(b));
-		}
+		
 		//========================
 
 
