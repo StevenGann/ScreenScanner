@@ -23,14 +23,14 @@ namespace ScreenScanner
 		public int SampleRate = 100;
 		public bool Enabled = false;
 		public Color Output = Color.FromArgb(0, 0, 0);
-		public bool ColorBoost = true;
+		public bool ColorBoost = false;//Broken for now.
 
 		//Private Fields
 		private int screenHeight;
 		private int screenHeightMid;
 		private int screenWidth;
 		private int screenWidthMid;
-		private FixedSizedQueue<Color> rgbQ;// 
+		private FixedSizedQueue<Color> rgbQ;
 		private Timer timer1 = new Timer();
 		private Random rnd = new Random();
 
@@ -42,7 +42,7 @@ namespace ScreenScanner
 			screenWidth = GetScreenWidth();
 			screenWidthMid = screenWidth / 2;
 
-			rgbQ = new FixedSizedQueue<Color>(50);
+			rgbQ = new FixedSizedQueue<Color>(20);
 
 			timer1.Tick += timerTick;
 		}
@@ -130,21 +130,63 @@ namespace ScreenScanner
 			*/
 			Color newRGB = getRGB(newX, newY);
 
+            //Max out saturation
+            if (ColorBoost == true)
+            {
+                //HSLColor outputHSL = new HSLColor(Output);
+                //outputHSL.Saturation = outputHSL.Saturation * 2.0f;
+                //outputHSL.Luminosity = outputHSL.Luminosity * 2.0f;
+                //Output = (Color)outputHSL;
+
+                /*
+                //Increase lightness to maximum. Wrong
+                float cbFactor = 1.0f;
+
+                if (Output.R >= Output.G && Output.R >= Output.B)
+                {
+                    cbFactor = 255.0f / (float)Output.R;
+                }
+                else if (Output.G >= Output.R && Output.G >= Output.B)
+                {
+                    cbFactor = 255.0f / (float)Output.G;
+                }
+                else
+                {
+                    cbFactor = 255.0f / (float)Output.B;
+                }
+
+                int cbR = (int)((float)Output.R * cbFactor);
+                int cbG = (int)((float)Output.G * cbFactor);
+                int cbB = (int)((float)Output.B * cbFactor);
+
+                Output = Color.FromArgb(cbR, cbG, cbB);
+                 */
+
+                float cbScalar = 10.0f;
+
+                int cbR = (int)(255.0f * sigmoidFunction(((float)newRGB.R / 255.0f), cbScalar));
+                int cbG = (int)(255.0f * sigmoidFunction(((float)newRGB.G / 255.0f), cbScalar));
+                int cbB = (int)(255.0f * sigmoidFunction(((float)newRGB.B / 255.0f), cbScalar));
+
+                newRGB = Color.FromArgb(cbR, cbG, cbB);
+            }
+
 			rgbQ.Enqueue(newRGB);
 
 			//To Do: Add a method for switching sample processing methods.
 
 			Output = averageQ();
 
-			//Max out saturation
-			if (ColorBoost == true)
-			{
-				HSLColor outputHSL = new HSLColor(Output);
-				outputHSL.Saturation = outputHSL.Saturation * 2.0f;
-				//outputHSL.Luminosity = outputHSL.Luminosity * 2.0f;
-				Output = (Color)outputHSL;
-			}
+			
 		}
+
+        private float sigmoidFunction(float x, float z)//input, scalar
+        {
+            float y = 0.0f;
+
+            y = (((z * (x - 0.5f)) / ((float)Math.Sqrt((float)Math.Pow((z*(x-0.5f)),2.0f)+1.0f)))+1.0f)/2.0f;
+            return y;
+        }
 
 		//Flat average of entire sample set.
 		//Returns the averaged Color struct.
@@ -198,7 +240,11 @@ namespace ScreenScanner
 		//Returns the color of a given pixel as a Color struct
 		static private Color getRGB(int x, int y)
 		{
-			Color color = Win32.GetPixelColor(x, y);
+            Color color = new Color();
+            color = Win32.GetPixelColor(x, y); //Direct pixel sample. Fast, no fullscreen.
+            
+
+
 			return color;
 		}
 
